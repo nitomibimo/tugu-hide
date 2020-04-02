@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://multichannel.qiscus.com/css/qiscus-sdk.2.9.6.css">
+    <style>.comment__card--container .comment__card--title {
+        text-transform: none;
+    }</style>
+</head>
+<body>
+    <script>
+        function initiateQiscus() {
+            QiscusSDK.core.init({
+                AppId: "tugu-insu-ldnfjbr3fdk",
+                options: {
+                loginSuccessCallback(data) {
+                    
+                    QiscusUI.chatTarget("ilesmana@antigravity.id");
+                },
+                roomChangedCallback(data) {
+                    // Pastikan untuk mengirim komen
+                    // hanya jika ini post pertama
+                    if (data.comments.length < 1) {
+                        QiscusSDK.core.sendComment(
+                            QiscusSDK.core.selected.id, // room id
+                            "Hi", // message content
+                        ).then(res => {
+                            const el = document.getElementById(res.id);
+                            el.style = 'display: none';
+                        });
+                    } else {
+                    // kalau sudah pernah di kirimkan komen, kita baca komen
+                    // pertama, kalau tipenya custom dan visible false
+                    // maka set display nya ke none supaya hilang
+                        document.getElementById(data.comments[0].id).style =
+                            "display: none;";
+                        }
+                }
+                }
+            });
+            let ls = JSON.parse(localStorage.getItem('qiscus-user-data'));
+            if(ls) {
+                QiscusSDK.core.setUser(ls.username, ls.password, ls.display_name);
+            } else {
+                var randomID = '';
+                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                for (var i = 0; i < 5; i++)
+                randomID += possible.charAt(Math.floor(Math.random() * possible.length));
+                var randomKey = Date.now();
+                var userData = {
+                user_id : randomID + '@guesttugu.com',
+                user_key : randomKey,
+                user_name : 'Guest - ' + randomKey
+                }
+                localStorage.setItem('qiscus-user-data', JSON.stringify({
+                        username: userData.user_id,
+                        password: userData.user_key,
+                        display_name: userData.user_name
+                    }));
+                QiscusSDK.core.setUser(userData.user_id, userData.user_key, userData.user_name, 'https://image.flaticon.com/icons/svg/145/145867.svg');
+            }
+            QiscusSDK.render();
+            }
+
+            (function() {
+            // Buat element qiscus-widget kalo belum ada
+            if (!document.getElementById("qiscus-widget"))
+                document.body.insertAdjacentHTML(
+                "beforeend",
+                '<div id="qiscus-widget"></div>'
+                );
+            // Pasang qiscus widget
+            var e = document.createElement("script");
+            e.setAttribute("type", "text/javascript");
+            e.setAttribute(
+                "src",
+                "https://multichannel.qiscus.com/js/qiscus-sdk.2.9.6.js"
+            );
+            e.onload = () => initiateQiscus();
+            document.head.appendChild(e);
+            })();
+    </script>
+</body>
+</html>
